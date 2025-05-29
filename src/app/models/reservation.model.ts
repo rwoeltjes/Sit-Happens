@@ -18,7 +18,7 @@ export interface Seat {
   row: string; // Row identifier (e.g., "A", "B")
   column: number; // Column number (e.g., 1, 2, 3)
   state: 'available' | 'reserved' | 'occupied'; // Current status
-  // You could add more properties like price, type (e.g., "premium")
+  reservedBy?: string; // Optional property to track the user who reserved the seat
 }
 
 // Helper function to generate seats for a given capacity and layout

@@ -13,6 +13,7 @@ import { Room, Seat } from '../models/reservation.model';
 })
 export class RoomLayoutComponent implements OnChanges {
   @Input() room!: Room; // Input from the parent ReservationComponent
+  @Input() loggedInUser!: string; // Logged-in user information
 
   // SVG dimensions for rendering
   svgWidth = 500;
@@ -68,13 +69,30 @@ export class RoomLayoutComponent implements OnChanges {
   onSeatClick(seat: Seat): void {
     if (seat.state === 'available') {
       // Toggle selection for available seats
-      seat.state = 'reserved'; // Or 'selected', then 'reserved' on confirm
-      console.log(`Seat ${seat.id} selected`);
+      seat.state = 'reserved';
+      seat.reservedBy = this.loggedInUser; // Assign the logged-in user
+      console.log(`Seat ${seat.id} reserved by ${this.loggedInUser}`);
+    } else if (seat.state === 'reserved' && seat.reservedBy === this.loggedInUser) {
+      // Allow de-selection if reserved by the logged-in user
+      seat.state = 'available';
+      seat.reservedBy = undefined; // Clear reservation
+      console.log(`Seat ${seat.id} de-selected by ${this.loggedInUser}`);
     } else {
       // 'occupied' seats cannot be clicked
       alert(`Seat ${seat.id} is already ${seat.state}.`);
     }
     // In a real app, you'd track selected seats in a service
     // and send this updated state to the backend on confirmation.
+  }
+
+  getSeatTooltip(seat: Seat): string {
+    // Show tooltip with reservation or occupation information
+    if (seat.state === 'reserved') {
+      return seat.reservedBy ? `Reserved by ${seat.reservedBy}` : 'Reserved';
+    } else if (seat.state === 'occupied') {
+      return 'Occupied';
+    } else {
+      return 'Available';
+    }
   }
 }

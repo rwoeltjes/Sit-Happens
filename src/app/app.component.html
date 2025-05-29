@@ -1,15 +1,16 @@
 <div>
-  <h1>Welcome to {{ title }}!</h1>
-  <p>This is your main application page.</p>
+  <h1 *ngIf="userName">Welcome to {{ title }}!</h1>
+  <p *ngIf="userName">Hello, {{ userName }}! You are logged in.</p>
+  <p *ngIf="!userName">This is your main application page.</p>
 
-  <div class="button-group">
-    <button routerLink="/reservation">Make a Reservation</button>
-    <button routerLink="/scanner">Check In (Scan Barcode)</button>
+  <div *ngIf="userName" class="button-group">
+    <button *ngIf="userName" routerLink="/reservation">Make a Reservation</button>
+    <button *ngIf="userName" routerLink="/scanner">Check In (Scan Barcode)</button>
+    <button *ngIf="userName" (click)="logout()">Logout</button>
   </div>
 
   <router-outlet></router-outlet>
 </div>
-
 <style>
   /* Keep existing styles, add button-group for layout */
   .button-group {
@@ -24,9 +25,9 @@
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
   }
   button:hover {
     background-color: #0056b3;
