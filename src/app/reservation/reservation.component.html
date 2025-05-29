@@ -1,0 +1,91 @@
+<div class="reservation-container">
+  <h1>Make a Reservation</h1>
+
+  <div class="selection-group">
+    <label for="buildingSelect">Select Building:</label>
+    <select id="buildingSelect" [(ngModel)]="selectedBuilding" (change)="onBuildingChange()">
+      <option [ngValue]="null">-- Select a Building --</option>
+      <option *ngFor="let building of buildings" [ngValue]="building">
+        {{ building.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="selection-group" *ngIf="selectedBuilding">
+    <label for="roomSelect">Select Room:</label>
+    <select id="roomSelect" [(ngModel)]="selectedRoom">
+      <option [ngValue]="null">-- Select a Room --</option>
+      <option *ngFor="let room of selectedBuilding.rooms" [ngValue]="room">
+        {{ room.name }} (Capacity: {{ room.capacity }})
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="selectedRoom" class="room-details">
+    <h2>Room: {{ selectedRoom.name }}</h2>
+    <app-room-layout [room]="selectedRoom"></app-room-layout>
+    <button (click)="makeReservation()" [disabled]="!selectedRoom">Confirm Reservation</button>
+  </div>
+</div>
+
+<style>
+  .reservation-container {
+    padding: 20px;
+    text-align: center;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  h1 {
+    color: #0056b3;
+    margin-bottom: 30px;
+  }
+  .selection-group {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  label {
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1em;
+  }
+  select {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    min-width: 200px;
+  }
+  .room-details {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  .room-details h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #28a745; /* Green for success */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
+  }
+  button:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+</style>

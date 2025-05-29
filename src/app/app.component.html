@@ -2,9 +2,33 @@
   <h1>Welcome to {{ title }}!</h1>
   <p>This is your main application page.</p>
 
-  <div>
+  <div class="button-group">
+    <button routerLink="/reservation">Make a Reservation</button>
     <button routerLink="/scanner">Check In (Scan Barcode)</button>
   </div>
 
   <router-outlet></router-outlet>
 </div>
+
+<style>
+  /* Keep existing styles, add button-group for layout */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between buttons */
+    margin-top: 50px;
+  }
+  button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>

@@ -1,0 +1,61 @@
+/* src/app/room-layout/room-layout.component.css */
+
+.room-layout-display {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+svg {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+}
+
+.seat {
+  stroke: #555;
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.seat.available {
+  fill: #a8df8e; /* Light green */
+}
+
+.seat.reserved {
+  fill: #f9d371; /* Yellow/Orange */
+}
+
+.seat.occupied {
+  fill: #ff6f61; /* Red */
+  cursor: not-allowed;
+}
+
+.seat:hover:not(.occupied) {
+  stroke: #007bff;
+  stroke-width: 2;
+  fill: #add8e6; /* Lighter blue on hover */
+}
+
+.seat-text {
+  pointer-events: none; /* Allows click events to pass through to the rect */
+  user-select: none; /* Prevent text selection */
+  font-weight: bold;
+}
+
+.row-label {
+  font-weight: bold;
+}
+
+.legend {
+  font-size: 12px;
+}
+.legend text {
+  alignment-baseline: middle;
+}
+.legend rect {
+  stroke: #555;
+  stroke-width: 0.5;
+}
