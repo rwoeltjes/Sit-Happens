@@ -1,4 +1,10 @@
-<h1>Welcome to My Angular App!</h1>
-<p>This is the main application component.</p>
+<div>
+  <h1>Welcome to {{ title }}!</h1>
+  <p>This is your main application page.</p>
 
-<router-outlet />
+  <div>
+    <button routerLink="/scanner">Check In (Scan Barcode)</button>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>

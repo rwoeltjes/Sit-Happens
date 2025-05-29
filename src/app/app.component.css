@@ -1,0 +1,18 @@
+/* Moved inline styles from app.component.html */
+div {
+  text-align: center;
+}
+button {
+  padding: 15px 30px;
+  margin-top: 50px;
+  font-size: 1.2em;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #0056b3;
+}

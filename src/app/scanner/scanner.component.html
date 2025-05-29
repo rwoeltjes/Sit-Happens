@@ -1,0 +1,98 @@
+<div class="text-center">
+  <h1>
+    Barcode Scanner
+  </h1>
+</div>
+
+<div class="scanner-container">
+  <zxing-scanner
+    #scanner
+    [tryHarder]="true"
+    [formats]="formatsEnabled"
+    [device]="selectedDevice || undefined"
+    (scanSuccess)="onCodeResult($event)"
+    (camerasFound)="onCamerasFound($event)"
+    (scanError)="onScanError($event)"
+    (torchCompatible)="torchCompatible = $event"
+  ></zxing-scanner>
+
+  <div *ngIf="availableDevices && availableDevices.length > 1">
+    <h3>Switch Camera:</h3>
+    <select [(ngModel)]="selectedDevice" title="Select a camera">
+      <option [value]="null">Select Camera</option>
+      <option *ngFor="let device of availableDevices" [value]="device">
+        {{ device.label }}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="scanResult">
+    <h2>Scan Result:</h2>
+    <p>{{ scanResult }}</p>
+  </div>
+
+  <div *ngIf="torchCompatible">
+    <button (click)="toggleTorch()" [disabled]="!selectedDevice">
+      {{ torchEnabled ? 'Turn Off Torch' : 'Turn On Torch' }}
+    </button>
+  </div>
+
+  <button (click)="goBack()">Go Back</button>
+</div>
+
+<style>
+  .scanner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  zxing-scanner {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  h1 {
+    color: #0056b3;
+  }
+  h2, h3 {
+    margin-top: 20px;
+    color: #333;
+  }
+  select, button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s ease;
+  }
+  select:hover, button:hover:not(:disabled) {
+    background-color: #e0e0e0;
+  }
+  button:active:not(:disabled) {
+    background-color: #d0d0d0;
+  }
+  button:disabled {
+    background-color: #eee;
+    color: #999;
+    cursor: not-allowed;
+  }
+  p {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff;
+    background-color: #e9f7fe;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  .text-center {
+    text-align: center;
+  }
+</style>
