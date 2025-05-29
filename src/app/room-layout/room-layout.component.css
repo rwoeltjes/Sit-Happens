@@ -53,7 +53,7 @@ svg {
   font-size: 12px;
 }
 .legend text {
-  alignment-baseline: middle;
+  dominant-baseline: middle;
 }
 .legend rect {
   stroke: #555;

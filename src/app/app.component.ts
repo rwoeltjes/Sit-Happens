@@ -13,8 +13,7 @@ import { Room } from './models/reservation.model';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RoomLayoutComponent
+    RouterLink
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
