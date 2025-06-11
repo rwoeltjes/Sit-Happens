@@ -34,3 +34,54 @@
 .nav-links a.active {
   color: #ffcc00;
 }
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.hamburger .material-icons {
+  font-size: 32px;
+}
+
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: #007bff;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  left: 20px;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px 0;
+}
+
+.mobile-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu a:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  .hamburger {
+    display: block;
+  }
+  .mobile-menu {
+    display: flex;
+  }
+  .header-container {
+    flex-wrap: wrap;
+  }
+}

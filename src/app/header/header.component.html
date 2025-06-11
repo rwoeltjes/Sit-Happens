@@ -9,5 +9,13 @@
       <a routerLink="/reservation" routerLinkActive="active">Make Reservation</a>
       <a routerLink="/scanner" routerLinkActive="active">Check In</a>
     </nav>
+    <div class="hamburger" (click)="showMenu = !showMenu">
+      <span class="material-icons">menu</span>
+    </div>
+  </div>
+  <div class="mobile-menu" *ngIf="showMenu">
+    <a routerLink="/dashboard" routerLinkActive="active" (click)="showMenu = false">Dashboard</a>
+    <a routerLink="/reservation" routerLinkActive="active" (click)="showMenu = false">Make Reservation</a>
+    <a routerLink="/scanner" routerLinkActive="active" (click)="showMenu = false">Check In</a>
   </div>
 </header>

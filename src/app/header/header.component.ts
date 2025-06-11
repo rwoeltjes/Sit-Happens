@@ -11,4 +11,5 @@ import { RouterLink } from '@angular/router';
 })
 export class HeaderComponent {
   appName = 'Sit-Happens';
+  showMenu = false;
 }
