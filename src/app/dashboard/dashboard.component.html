@@ -1,0 +1,96 @@
+<div class="dashboard-container">
+  <section class="welcome-section">
+    <h1 class="welcome-title">Welcome, {{ userName }}!</h1>
+    <p class="welcome-subtitle">Ready to find your perfect spot? Let's get started.</p>
+  </section>
+
+  <section class="actions-grid">
+    <div class="action-card primary-card" routerLink="/reservation">
+      <div class="icon-container">
+        <span class="material-icons">confirmation_number</span>
+      </div>
+      <h2 class="card-title">New Reservation</h2>
+      <p class="card-description">Book your seat or team space.</p>
+    </div>
+
+    <div class="action-card" routerLink="/reservations">
+      <div class="icon-container">
+        <span class="material-icons">people</span>
+      </div>
+      <h2 class="card-title">My Reservations</h2>
+      <p class="card-description">View and manage your bookings.</p>
+    </div>
+
+    <div class="action-card" routerLink="/scanner">
+      <div class="icon-container">
+        <span class="material-icons">qr_code_scanner</span>
+      </div>
+      <h2 class="card-title">Check In</h2>
+      <p class="card-description">Scan QR to confirm your seat.</p>
+    </div>
+
+    <div class="action-card disabled-card">
+      <div class="icon-container">
+        <span class="material-icons">apartment</span>
+      </div>
+      <h2 class="card-title">Floor Plans</h2>
+      <p class="card-description">Explore building layouts (soon).</p>
+    </div>
+  </section>
+  
+  <section class="metrics-section">
+    <h2 class="section-title">Quick Overview</h2>
+    <div class="metrics-grid">
+      <div *ngFor="let metric of metrics" class="metric-card" [ngClass]="metric.bgColor">
+        <div class="metric-content">
+          <div class="metric-icon" [ngClass]="metric.textColor">
+            <span class="material-icons">{{ metric.icon }}</span>
+          </div>
+          <div class="metric-info">
+            <p class="metric-value" [ngClass]="metric.textColor">{{ metric.value }}</p>
+            <p class="metric-title" [ngClass]="metric.textColor">{{ metric.title }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="upcomingReservations.length > 0" class="reservations-section">
+    <h2 class="section-title">Your Next Reservations</h2>
+    <div class="reservations-list">
+      <div *ngFor="let reservation of upcomingReservations" class="reservation-card">
+        <div class="reservation-details">
+          <h3 class="reservation-title">
+            Seat(s) {{ reservation.seatIds.join(', ') }}
+            <span *ngIf="reservation.teamName"> for {{ reservation.teamName }}</span>
+          </h3>
+          <p class="reservation-location">
+            <span class="material-icons small-icon">location_on</span> 
+            Building ID: {{ reservation.buildingId }}, Room ID: {{ reservation.roomId }}
+          </p>
+          <p class="reservation-time">
+            <span class="material-icons small-icon">schedule</span> 
+            {{ formatDate(reservation.startTime) }} - {{ formatTime(reservation.endTime) }}
+          </p>
+        </div>
+        <div class="reservation-actions">
+          <button *ngIf="reservation.status === 'pending_check_in'" 
+                  class="check-in-button" 
+                  routerLink="/scanner">
+            <span class="material-icons">qr_code_scanner</span> Check In Now
+          </button>
+          <button class="details-button" [routerLink]="['/reservations', reservation.id]">
+            View Details
+          </button>
+        </div>
+        <p *ngIf="reservation.status === 'pending_check_in'" class="check-in-reminder">
+          Remember to check in within 15 minutes of reservation start time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="image-section">
+    <img src="https://placehold.co/1200x300.png" alt="Office collaboration" class="dashboard-image">
+  </section>
+</div>

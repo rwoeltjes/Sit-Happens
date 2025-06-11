@@ -1,11 +1,12 @@
 // src/app/app.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, Router } from '@angular/router'; // Import Router
+import { RouterOutlet, Router } from '@angular/router'; // Import Router
 import { AuthService } from './services/auth.service'; // Import AuthService
 import { Observable } from 'rxjs';
 import { RoomLayoutComponent } from './room-layout/room-layout.component';
 import { Room } from './models/reservation.model';
+import { HeaderComponent } from './header/header.component'; // Import the header component
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { Room } from './models/reservation.model';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink
+    HeaderComponent // Import the header component
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

@@ -1,14 +1,5 @@
 <div>
-  <h1 *ngIf="userName">Welcome to {{ title }}!</h1>
-  <p *ngIf="userName">Hello, {{ userName }}! You are logged in.</p>
-  <p *ngIf="!userName">This is your main application page.</p>
-
-  <div *ngIf="userName" class="button-group">
-    <button *ngIf="userName" routerLink="/reservation">Make a Reservation</button>
-    <button *ngIf="userName" routerLink="/scanner">Check In (Scan Barcode)</button>
-    <button *ngIf="userName" (click)="logout()">Logout</button>
-  </div>
-
+  <app-header></app-header>
   <router-outlet></router-outlet>
 </div>
 <style>
