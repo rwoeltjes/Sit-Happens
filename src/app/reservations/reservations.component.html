@@ -1,0 +1,64 @@
+<div class="reservations-container">
+  <div *ngIf="isLoading" class="loader-container">
+    <span class="material-icons loader">autorenew</span>
+  </div>
+  <div *ngIf="!isLoading">
+    <div class="header-row">
+      <h1 class="title">My Reservations</h1>
+      <a routerLink="/reservation" class="new-reservation-btn">
+        <span class="material-icons">add_circle</span> New Reservation
+      </a>
+    </div>
+    <div *ngIf="reservations.length === 0" class="empty-message">
+      You have no reservations yet.
+    </div>
+    <div *ngIf="reservations.length > 0" class="reservation-list">
+      <div *ngFor="let reservation of reservations" class="reservation-card" [class.cancelled]="reservation.status === 'cancelled'">
+        <div class="reservation-info">
+          <div class="reservation-main">
+            <span class="material-icons ticket-icon">local_activity</span>
+            <div>
+              <div class="reservation-title">
+                Seat(s) {{ reservation.seatIds.join(', ') }}
+                <span *ngIf="reservation.teamName"> for {{ reservation.teamName }}</span>
+              </div>
+              <div class="reservation-meta">
+                <span class="material-icons small-icon">location_on</span>
+                Building: {{ reservation.buildingId }}, Room: {{ reservation.roomId }}
+              </div>
+              <div class="reservation-meta">
+                <span class="material-icons small-icon">schedule</span>
+                {{ formatDate(reservation.startTime) }} - {{ formatTime(reservation.endTime) }}
+              </div>
+              <div class="reservation-meta status" [ngClass]="reservation.status">
+                Status: {{ reservation.status | titlecase }}
+              </div>
+            </div>
+          </div>
+          <div class="reservation-actions">
+            <button *ngIf="reservation.status !== 'cancelled'" (click)="handleCancelReservation(reservation.id)" [disabled]="cancellingId === reservation.id" class="cancel-btn">
+              <span *ngIf="cancellingId === reservation.id" class="material-icons spin">autorenew</span>
+              <span *ngIf="cancellingId !== reservation.id" class="material-icons">cancel</span>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel Confirmation Dialog -->
+  <div class="dialog-backdrop" *ngIf="reservationToCancel">
+    <div class="dialog">
+      <div class="dialog-title">Are you sure you want to cancel?</div>
+      <div class="dialog-desc">This action cannot be undone. Cancelling this reservation will free up the seat for others.</div>
+      <div class="dialog-actions">
+        <button (click)="cancelDialogClose()" [disabled]="!!cancellingId">Back</button>
+        <button (click)="confirmCancelReservation()" [disabled]="!!cancellingId" class="danger">
+          <span *ngIf="cancellingId === reservationToCancel" class="material-icons spin">autorenew</span>
+          Confirm Cancellation
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
