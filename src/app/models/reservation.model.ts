@@ -1,128 +1,187 @@
 // src/app/models/reservation.model.ts
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
+
 export interface Building {
   id: string;
   name: string;
-  rooms: Room[];
-  address?: string; // Optional address property
-  imageUrl?: string; // Optional image URL property
+  address: string;
+  imageUrl?: string;
+}
+
+export interface Seat {
+  id: string;
+  label: string;
+  type: 'individual' | 'team_pod';
+  x: number;
+  y: number;
+  isWalkway?: boolean;
 }
 
 export interface Room {
   id: string;
   name: string;
+  buildingId: string;
   capacity: number;
-  layout: Seat[][]; // A 2D array representing rows and columns of seats
+  floorPlan: {
+    rows: number;
+    cols: number;
+    seats: Seat[];
+    unavailableSeatIds?: string[];
+  };
+  imageUrl?: string;
 }
 
-export interface Seat {
-  id: string; // Unique ID for the seat (e.g., "A1", "B5")
-  row: string; // Row identifier (e.g., "A", "B")
-  column: number; // Column number (e.g., 1, 2, 3)
-  state: 'available' | 'reserved' | 'occupied'; // Current status
-  reservedBy?: string; // Optional property to track the user who reserved the seat
+export interface Reservation {
+  id: string;
+  userId: string;
+  seatIds: string[];
+  roomId: string;
+  buildingId: string;
+  startTime: Date;
+  endTime: Date;
+  status: 'confirmed' | 'checked-in' | 'cancelled' | 'expired' | 'pending_check_in';
+  teamName?: string;
 }
 
-// Helper function to generate seats for a given capacity and layout
-function generateSeats(capacity: number, rows: number, colsPerRow: number): Seat[][] {
-  const layout: Seat[][] = [];
-  let seatCount = 0;
-  const rowChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+export type SeatStatus = 'available' | 'selected' | 'reserved' | 'occupied' | 'unavailable';
 
+export interface DisplaySeat extends Seat {
+  status: SeatStatus;
+}
+
+// --- MOCK DATA ---
+
+export const mockUser: User = {
+  id: 'user123',
+  name: 'Alex Johnson',
+  email: 'alex.johnson@example.com',
+  avatarUrl: 'https://placehold.co/100x100.png',
+};
+
+export const mockBuildings: Building[] = [
+  { id: 'b1', name: 'Headquarters', address: '123 Main St, Anytown', imageUrl: 'https://placehold.co/600x400.png?text=Headquarters' },
+  { id: 'b2', name: 'Innovation Center', address: '456 Tech Park, Anytown', imageUrl: 'https://placehold.co/600x400.png?text=Innovation+Center' },
+  { id: 'b3', name: 'Downtown Hub', address: '789 Business Ave, Anytown', imageUrl: 'https://placehold.co/600x400.png?text=Downtown+Hub' },
+];
+
+const generateSeats = (rows: number, cols: number): Seat[] => {
+  const seats: Seat[] = [];
+  let idCounter = 1;
   for (let r = 0; r < rows; r++) {
-    const row: Seat[] = [];
-    const currentRowChar = rowChars[r];
-    for (let c = 0; c < colsPerRow; c++) {
-      if (seatCount < capacity) {
-        const seatId = `${currentRowChar}${c + 1}`;
-        row.push({
-          id: seatId,
-          row: currentRowChar,
-          column: c + 1,
-          state: 'available' // Default to available
-        });
-        seatCount++;
+    for (let c = 0; c < cols; c++) {
+      if (c === Math.floor(cols / 3) || c === Math.floor(cols * 2 / 3)) {
+        seats.push({ id: `w-${r}-${c}`, label: `W${r}${c}`, type: 'individual', x: c, y: r, isWalkway: true });
       } else {
-        // Stop adding seats if capacity is reached
-        break;
+        seats.push({ id: `s-${r}-${c}-${idCounter++}`, label: `${String.fromCharCode(65 + r)}${c + 1}`, type: 'individual', x: c, y: r });
       }
-    }
-    if (row.length > 0) { // Only add rows that actually have seats
-      layout.push(row);
-    }
-    if (seatCount >= capacity) {
-      break; // Stop adding rows if capacity is reached
     }
   }
+  return seats;
+};
 
-  // Set some random states for demonstration
-  let states = ['available', 'reserved', 'occupied'];
-  layout.forEach(row => {
-    row.forEach(seat => {
-      // Small chance for occupied or reserved for demo purposes
-      const rand = Math.random();
-      if (rand < 0.1) { // 10% chance to be occupied
-        seat.state = 'occupied';
-      } else if (rand < 0.25) { // 15% chance to be reserved (after occupied check)
-        seat.state = 'reserved';
-      } else {
-        seat.state = 'available';
-      }
-    });
-  });
-
-  return layout;
-}
-
-
-// Example Data (now with layouts matching capacity)
-export const DUMMY_BUILDINGS: Building[] = [
+export const mockRooms: Room[] = [
   {
-    id: 'B1',
-    name: 'Main Auditorium',
-    rooms: [
-      {
-        id: 'R1',
-        name: 'Grand Hall',
-        capacity: 25, // Capacity of 25
-        layout: generateSeats(25, 5, 5), // 5 rows of 5 seats = 25 seats
-      },
-      {
-        id: 'R2',
-        name: 'Lecture Room 201',
-        capacity: 18, // Capacity of 18
-        layout: generateSeats(18, 6, 3), // 6 rows of 3 seats = 18 seats
-      },
-    ],
+    id: 'r1',
+    name: 'Open Space Alpha',
+    buildingId: 'b1',
+    capacity: 20,
+    floorPlan: { rows: 5, cols: 6, seats: generateSeats(5,6), unavailableSeatIds: ['s-0-0-1'] },
+    imageUrl: 'https://placehold.co/600x400.png?text=Open+Space+Alpha',
   },
   {
-    id: 'B2',
-    name: 'Conference Center',
-    rooms: [
-      {
-        id: 'CR1',
-        name: 'Conference Room A',
-        capacity: 8, // Capacity of 8
-        layout: generateSeats(8, 4, 2), // 4 rows of 2 seats = 8 seats
-      },
-      {
-        id: 'CR2',
-        name: 'Executive Lounge',
-        capacity: 6, // Capacity of 6
-        layout: generateSeats(6, 3, 2), // 3 rows of 2 seats = 6 seats
-      },
-    ],
+    id: 'r2',
+    name: 'Collaboration Zone',
+    buildingId: 'b1',
+    capacity: 10,
+    floorPlan: { rows: 3, cols: 5, seats: generateSeats(3,5) },
+    imageUrl: 'https://placehold.co/600x400.png?text=Collaboration+Zone',
   },
   {
-    id: 'B3',
-    name: 'Training Hub',
-    rooms: [
-      {
-        id: 'TR1',
-        name: 'Tech Lab 1',
-        capacity: 12, // Capacity of 12
-        layout: generateSeats(12, 3, 4), // 3 rows of 4 seats = 12 seats
-      },
-    ],
+    id: 'r3',
+    name: 'Quiet Focus Area',
+    buildingId: 'b2',
+    capacity: 15,
+    floorPlan: { rows: 4, cols: 5, seats: generateSeats(4,5) },
+    imageUrl: 'https://placehold.co/600x400.png?text=Quiet+Focus+Area',
+  },
+   {
+    id: 'r4',
+    name: 'Project Room Gamma',
+    buildingId: 'b3',
+    capacity: 8,
+    floorPlan: { rows: 2, cols: 4, seats: generateSeats(2,4) },
+    imageUrl: 'https://placehold.co/600x400.png?text=Project+Room+Gamma',
   },
 ];
+
+export const mockReservations: Reservation[] = [
+  {
+    id: 'res1',
+    userId: 'user123',
+    seatIds: [mockRooms[0].floorPlan.seats.find(s=>!s.isWalkway && !mockRooms[0].floorPlan.unavailableSeatIds?.includes(s.id))?.id || 's1'],
+    roomId: 'r1',
+    buildingId: 'b1',
+    startTime: new Date(new Date().setDate(new Date().getDate() + 1)),
+    endTime: new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(17)),
+    status: 'confirmed',
+  },
+  {
+    id: 'res2',
+    userId: 'user123',
+    seatIds: [mockRooms[2].floorPlan.seats.find(s=>!s.isWalkway)?.id || 's2'],
+    roomId: 'r3',
+    buildingId: 'b2',
+    startTime: new Date(new Date().setDate(new Date().getDate() + 3)),
+    endTime: new Date(new Date(new Date().setDate(new Date().getDate() + 3)).setHours(18)),
+    status: 'pending_check_in',
+    teamName: 'Project Phoenix',
+  },
+  {
+    id: 'res3',
+    userId: 'user123',
+    seatIds: [mockRooms[1].floorPlan.seats.find(s=>!s.isWalkway)?.id || 's3'],
+    roomId: 'r2',
+    buildingId: 'b1',
+    startTime: new Date(new Date().setDate(new Date().getDate() - 2)),
+    endTime: new Date(new Date(new Date().setDate(new Date().getDate() - 2)).setHours(17)),
+    status: 'checked-in',
+  },
+  {
+    id: 'res4',
+    userId: 'user123',
+    seatIds: [mockRooms[0].floorPlan.seats.filter(s=>!s.isWalkway)[2]?.id || 's4'],
+    roomId: 'r1',
+    buildingId: 'b1',
+    startTime: new Date(new Date().setDate(new Date().getDate() - 5)),
+    endTime: new Date(new Date(new Date().setDate(new Date().getDate() - 5)).setHours(17)),
+    status: 'cancelled',
+  },
+];
+
+export const getRoomSeats = (roomId: string, reservationTime?: Date): Seat[] => {
+  const room = mockRooms.find(r => r.id === roomId);
+  if (!room) return [];
+  return room.floorPlan.seats.map(seat => {
+    let status: 'available' | 'reserved' | 'unavailable' = 'available';
+    if (room.floorPlan.unavailableSeatIds?.includes(seat.id)) {
+      status = 'unavailable';
+    } else if (reservationTime && Math.random() < 0.3 && !seat.isWalkway) {
+      const isReservedInMock = mockReservations.some(res =>
+        res.roomId === roomId &&
+        res.seatIds.includes(seat.id) &&
+        res.status !== 'cancelled' && res.status !== 'expired' &&
+        new Date(res.startTime).toDateString() === reservationTime.toDateString()
+      );
+      if (isReservedInMock) {
+        status = 'reserved';
+      }
+    }
+    return { ...seat, status };
+  });
+};

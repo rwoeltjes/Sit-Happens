@@ -1,8 +1,8 @@
 // src/app/room-layout/room-layout.component.ts
 
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common'; // For *ngIf, *ngFor
-import { Room, Seat } from '../models/reservation.model';
+import { CommonModule } from '@angular/common';
+import { DisplaySeat } from '../models/reservation.model';
 
 @Component({
   selector: 'app-room-layout',
@@ -12,8 +12,9 @@ import { Room, Seat } from '../models/reservation.model';
   styleUrls: ['./room-layout.component.css']
 })
 export class RoomLayoutComponent implements OnChanges {
-  @Input() room!: Room; // Input from the parent ReservationComponent
-  @Input() loggedInUser!: string; // Logged-in user information
+  @Input() seats: DisplaySeat[] = [];
+  @Input() rows: number = 0;
+  @Input() cols: number = 0;
 
   // SVG dimensions for rendering
   svgWidth = 500;
@@ -25,22 +26,14 @@ export class RoomLayoutComponent implements OnChanges {
 
   // Calculated properties based on room layout
   viewBox = '0 0 500 300'; // Default, will be updated
-  totalRows = 0;
-  totalCols = 0;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['room'] && this.room) {
-      this.calculateSvgDimensions();
-    }
+    this.calculateSvgDimensions();
   }
 
   calculateSvgDimensions(): void {
-    this.totalRows = this.room.layout.length;
-    this.totalCols = Math.max(...this.room.layout.map(row => row.length));
-
-    // Calculate dynamic SVG dimensions based on layout
-    const contentWidth = this.totalCols * this.colSpacing;
-    const contentHeight = this.totalRows * this.rowSpacing;
+    const contentWidth = this.cols * this.colSpacing;
+    const contentHeight = this.rows * this.rowSpacing;
 
     this.svgWidth = contentWidth + (this.padding * 2);
     this.svgHeight = contentHeight + (this.padding * 2) + 20; // +20 for row labels
@@ -57,42 +50,37 @@ export class RoomLayoutComponent implements OnChanges {
     return this.padding + (rowIndex * this.rowSpacing) + 20; // +20 for row labels
   }
 
-  getRowLabelY(rowIndex: number): number {
-    return this.padding + (rowIndex * this.rowSpacing) + 15; // Position for row labels
+  getSeatClass(seat: DisplaySeat): string {
+    // Add CSS classes based on seat status
+    return `seat ${seat.status}`;
   }
 
-  getSeatClass(seat: Seat): string {
-    // Add CSS classes based on seat state
-    return `seat ${seat.state}`;
-  }
-
-  onSeatClick(seat: Seat): void {
-    if (seat.state === 'available') {
-      // Toggle selection for available seats
-      seat.state = 'reserved';
-      seat.reservedBy = this.loggedInUser; // Assign the logged-in user
-      console.log(`Seat ${seat.id} reserved by ${this.loggedInUser}`);
-    } else if (seat.state === 'reserved' && seat.reservedBy === this.loggedInUser) {
-      // Allow de-selection if reserved by the logged-in user
-      seat.state = 'available';
-      seat.reservedBy = undefined; // Clear reservation
-      console.log(`Seat ${seat.id} de-selected by ${this.loggedInUser}`);
-    } else {
-      // 'occupied' seats cannot be clicked
-      alert(`Seat ${seat.id} is already ${seat.state}.`);
-    }
-    // In a real app, you'd track selected seats in a service
-    // and send this updated state to the backend on confirmation.
-  }
-
-  getSeatTooltip(seat: Seat): string {
+  getSeatTooltip(seat: DisplaySeat): string {
     // Show tooltip with reservation or occupation information
-    if (seat.state === 'reserved') {
-      return seat.reservedBy ? `Reserved by ${seat.reservedBy}` : 'Reserved';
-    } else if (seat.state === 'occupied') {
+    if (seat.status === 'reserved') {
+      return 'Reserved';
+    } else if (seat.status === 'occupied') {
       return 'Occupied';
+    } else if (seat.status === 'unavailable') {
+      return 'Unavailable';
     } else {
       return 'Available';
     }
+  }
+
+  getRows(): number[] {
+    return Array.from({ length: this.rows }, (_, i) => i);
+  }
+
+  getCols(): number[] {
+    return Array.from({ length: this.cols }, (_, i) => i);
+  }
+
+  getSeatAt(row: number, col: number): DisplaySeat | undefined {
+    return this.seats.find(seat => seat.x === col && seat.y === row);
+  }
+
+  getRowLabel(row: number): string {
+    return String.fromCharCode(65 + row); // A, B, C, ...
   }
 }

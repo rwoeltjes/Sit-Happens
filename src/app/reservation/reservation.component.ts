@@ -7,17 +7,18 @@ import { formatDate } from '@angular/common';
 
 // Import the RoomLayoutComponent and the data model
 import { RoomLayoutComponent } from '../room-layout/room-layout.component';
-import { Building, Room, DUMMY_BUILDINGS } from '../models/reservation.model';
+import { Building, Room, mockBuildings, mockRooms, Seat } from '../models/reservation.model';
 
 @Component({
   selector: 'app-reservation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RoomLayoutComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reservation.component.html',
   styleUrls: ['./reservation.component.css']
 })
 export class ReservationComponent implements OnInit {
-  buildings: Building[] = DUMMY_BUILDINGS;
+  buildings: Building[] = mockBuildings;
+  rooms: Room[] = mockRooms;
   selectedBuilding: Building | null = null;
   selectedRoom: Room | null = null;
   reservationDate: string = this.getToday();
@@ -31,6 +32,10 @@ export class ReservationComponent implements OnInit {
   reservationComplete: boolean = false;
   isSubmitting: boolean = false;
   encodeURIComponent = encodeURIComponent;
+
+  get availableRooms(): Room[] {
+    return this.selectedBuilding ? this.rooms.filter(r => r.buildingId === this.selectedBuilding?.id) : [];
+  }
 
   getToday(): string {
     const today = new Date();
@@ -63,7 +68,7 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  // Seat selection logic
+  // Seat selection logic (now uses floorPlan.seats)
   onSeatSelect(seatId: string) {
     if (this.selectedSeats.includes(seatId)) {
       this.selectedSeats = this.selectedSeats.filter(id => id !== seatId);

@@ -22,7 +22,7 @@
       <label for="roomSelect">Select Room:</label>
       <select id="roomSelect" [(ngModel)]="selectedRoom">
         <option [ngValue]="null">-- Select a Room --</option>
-        <option *ngFor="let room of selectedBuilding?.rooms" [ngValue]="room">{{ room.name }} (Capacity: {{ room.capacity }})</option>
+        <option *ngFor="let room of availableRooms" [ngValue]="room">{{ room.name }} (Capacity: {{ room.capacity }})</option>
       </select>
     </div>
     <!-- Step 3: Date & Time -->
@@ -49,18 +49,16 @@
     <!-- Step 4: Choose Seats -->
     <div *ngIf="currentStep === 4 && selectedRoom">
       <h2>Choose Your Seat(s) in {{ selectedRoom.name }}</h2>
-      <div class="seat-picker">
-        <div *ngFor="let row of selectedRoom.layout" class="seat-row">
-          <span class="row-label">{{ row[0].row }}</span>
-          <span *ngFor="let seat of row" class="seat-box" [ngClass]="{
+      <div class="seat-picker-grid" [style.gridTemplateColumns]="'repeat(' + selectedRoom.floorPlan.cols + ', 40px)'">
+        <ng-container *ngFor="let seat of selectedRoom.floorPlan.seats">
+          <span *ngIf="!seat.isWalkway" class="seat-box" [ngClass]="{
             'selected': isSeatSelected(seat.id),
-            'reserved': seat.state === 'reserved',
-            'occupied': seat.state === 'occupied',
-            'available': seat.state === 'available'
-          }" (click)="seat.state === 'available' || isSeatSelected(seat.id) ? onSeatSelect(seat.id) : null">
-            {{ seat.column }}
+            'available': !isSeatSelected(seat.id)
+          }" (click)="onSeatSelect(seat.id)">
+            {{ seat.label }}
           </span>
-        </div>
+          <span *ngIf="seat.isWalkway" class="seat-walkway"></span>
+        </ng-container>
       </div>
       <div class="selected-seats-info">Selected: {{ selectedSeats.join(', ') || 'None' }}</div>
     </div>
@@ -100,14 +98,32 @@
   .time-group { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
   .team-booking-toggle { margin: 12px 0; }
   .max-seats-info { font-size: 0.95em; color: #666; margin-top: 4px; }
-  .seat-picker { margin: 24px 0; }
-  .seat-row { display: flex; align-items: center; margin-bottom: 8px; }
-  .row-label { width: 30px; font-weight: bold; color: #555; }
-  .seat-box { display: inline-block; width: 36px; height: 36px; margin: 0 4px; border-radius: 6px; background: #e0e0e0; text-align: center; line-height: 36px; font-weight: 500; cursor: pointer; border: 2px solid transparent; transition: background 0.2s, border 0.2s; }
+  .seat-picker-grid {
+    display: grid;
+    gap: 8px;
+    margin: 24px 0;
+    justify-content: center;
+  }
+  .seat-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: #e0e0e0;
+    font-weight: 500;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background 0.2s, border 0.2s;
+  }
   .seat-box.available:hover { background: #b3e5fc; }
   .seat-box.selected { background: #007bff; color: #fff; border: 2px solid #0056b3; }
-  .seat-box.reserved { background: #ffe082; color: #bfa000; cursor: not-allowed; }
-  .seat-box.occupied { background: #e57373; color: #fff; cursor: not-allowed; }
+  .seat-walkway {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+  }
   .selected-seats-info { margin-top: 10px; color: #007bff; font-weight: 500; }
   .confirm-list { list-style: none; padding: 0; margin: 18px 0; }
   .confirm-list li { margin-bottom: 8px; }

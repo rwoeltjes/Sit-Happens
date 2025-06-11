@@ -62,7 +62,7 @@
           </p>
           <p class="reservation-time">
             <span class="material-icons small-icon">schedule</span> 
-            {{ formatDate(reservation.startTime) }} - {{ formatTime(reservation.endTime) }}
+            {{ formatDate(reservation.startTime ? reservation.startTime.toString() : '') }} - {{ formatTime(reservation.endTime.toString() ? reservation.endTime.toString() : '') }}
           </p>
         </div>
         <div class="reservation-actions">

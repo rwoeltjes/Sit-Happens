@@ -24,11 +24,11 @@
               </div>
               <div class="reservation-meta">
                 <span class="material-icons small-icon">location_on</span>
-                Building: {{ reservation.buildingId }}, Room: {{ reservation.roomId }}
+                Building: {{ getBuildingName(reservation.buildingId) }}, Room: {{ getRoomName(reservation.roomId) }}
               </div>
               <div class="reservation-meta">
                 <span class="material-icons small-icon">schedule</span>
-                {{ formatDate(reservation.startTime) }} - {{ formatTime(reservation.endTime) }}
+                {{ formatDate((reservation.startTime ? reservation.startTime.toString() : '')) }} - {{ formatTime((reservation.endTime ? reservation.endTime.toString() : '')) }}
               </div>
               <div class="reservation-meta status" [ngClass]="reservation.status">
                 Status: {{ reservation.status | titlecase }}

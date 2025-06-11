@@ -28,16 +28,13 @@ export class AppComponent implements OnInit {
     id: 'room1',
     name: 'Conference Room',
     capacity: 10,
-    layout: [
-      [
-        { id: 'A1', row: 'A', column: 1, state: 'available' },
-        { id: 'A2', row: 'A', column: 2, state: 'available' }
-      ],
-      [
-        { id: 'B1', row: 'B', column: 1, state: 'available' },
-        { id: 'B2', row: 'B', column: 2, state: 'available' }
-      ]
-    ]
+    buildingId: '',
+    floorPlan: {
+      rows: 0,
+      cols: 0,
+      seats: [],
+      unavailableSeatIds: undefined
+    }
   }; // Initialize with a valid Room object
   userName: string | null = null; // To display the user's name
 

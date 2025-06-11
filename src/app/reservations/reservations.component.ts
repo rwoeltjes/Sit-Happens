@@ -2,18 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-
-interface Reservation {
-  id: string;
-  userId: string;
-  buildingId: string;
-  roomId: string;
-  seatIds: string[];
-  startTime: string;
-  endTime: string;
-  status: 'confirmed' | 'pending_check_in' | 'checked_in' | 'completed' | 'cancelled';
-  teamName?: string;
-}
+import { mockReservations, Reservation, mockBuildings, mockRooms } from '../models/reservation.model';
 
 @Component({
   selector: 'app-reservations',
@@ -28,35 +17,14 @@ export class ReservationsComponent implements OnInit {
   isLoading = true;
   cancellingId: string | null = null;
   reservationToCancel: string | null = null;
-
-  mockReservations: Reservation[] = [
-    {
-      id: '1',
-      userId: 'MockedUser',
-      buildingId: 'B001',
-      roomId: 'R101',
-      seatIds: ['A1', 'A2'],
-      startTime: new Date(Date.now() + 3600000).toISOString(),
-      endTime: new Date(Date.now() + 7200000).toISOString(),
-      status: 'pending_check_in',
-      teamName: 'Product Team'
-    },
-    {
-      id: '2',
-      userId: 'MockedUser',
-      buildingId: 'B001',
-      roomId: 'R102',
-      seatIds: ['C3'],
-      startTime: new Date(Date.now() + 86400000).toISOString(),
-      endTime: new Date(Date.now() + 90000000).toISOString(),
-      status: 'confirmed'
-    }
-  ];
+  mockReservations: Reservation[] = mockReservations;
+  public mockBuildings = mockBuildings;
+  public mockRooms = mockRooms;
 
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.userName = this.authService.getUserName();
+    this.userName = 'MockedUser'; // Replace with real user if available
     setTimeout(() => {
       this.reservations = this.mockReservations.filter(r => r.userId === this.userName);
       this.isLoading = false;
@@ -90,5 +58,15 @@ export class ReservationsComponent implements OnInit {
 
   cancelDialogClose() {
     this.reservationToCancel = null;
+  }
+
+  getBuildingName(buildingId: string): string {
+    const b = this.mockBuildings.find(b => b.id === buildingId);
+    return b ? b.name : buildingId;
+  }
+
+  getRoomName(roomId: string): string {
+    const r = this.mockRooms.find(r => r.id === roomId);
+    return r ? r.name : roomId;
   }
 }
