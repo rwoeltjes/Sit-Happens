@@ -4,11 +4,18 @@
     <div class="step-indicator">Step {{currentStep}} of 5</div>
     <!-- Step 1: Select Building -->
     <div *ngIf="currentStep === 1">
-      <label for="buildingSelect">Select Building:</label>
-      <select id="buildingSelect" [(ngModel)]="selectedBuilding">
-        <option [ngValue]="null">-- Select a Building --</option>
-        <option *ngFor="let building of buildings" [ngValue]="building">{{ building.name }}</option>
-      </select>
+      <div class="building-cards-grid">
+        <div *ngFor="let building of buildings" class="building-card" [class.selected]="selectedBuilding?.id === building.id">
+          <div class="building-image" [ngStyle]="{'background-image': 'url(' + (building.imageUrl || 'https://placehold.co/400x200.png?text=' + encodeURIComponent(building.name)) + ')'}"></div>
+          <div class="building-info">
+            <div class="building-title">{{ building.name }}</div>
+            <div class="building-address"><span class="material-icons">location_on</span> {{ building.address || 'No address' }}</div>
+          </div>
+          <button (click)="selectedBuilding = building" [class.selected-btn]="selectedBuilding?.id === building.id">
+            {{ selectedBuilding?.id === building.id ? 'Selected' : 'Select Building' }}
+          </button>
+        </div>
+      </div>
     </div>
     <!-- Step 2: Select Room -->
     <div *ngIf="currentStep === 2">
@@ -111,4 +118,69 @@
   .success-message { text-align: center; margin-top: 40px; }
   .success-message h2 { color: #28a745; margin-bottom: 16px; }
   .success-message button { background: #ffc107; color: #333; margin-top: 18px; }
+  .building-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .building-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, border 0.2s;
+    border: 2px solid transparent;
+  }
+  .building-card.selected {
+    border: 2px solid #007bff;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.12);
+  }
+  .building-image {
+    height: 140px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .building-info {
+    padding: 16px 16px 0 16px;
+    flex: 1;
+  }
+  .building-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .building-address {
+    color: #666;
+    font-size: 0.98em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .building-address .material-icons {
+    font-size: 18px;
+    margin-right: 4px;
+  }
+  .building-card button {
+    margin: 16px;
+    padding: 10px 0;
+    border-radius: 6px;
+    border: none;
+    background: #f0f0f0;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .building-card button.selected-btn {
+    background: #007bff;
+    color: #fff;
+  }
+  .building-card button:hover:not(.selected-btn) {
+    background: #e6f2ff;
+  }
 </style>

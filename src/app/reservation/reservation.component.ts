@@ -30,6 +30,7 @@ export class ReservationComponent implements OnInit {
   currentStep: number = 1;
   reservationComplete: boolean = false;
   isSubmitting: boolean = false;
+  encodeURIComponent = encodeURIComponent;
 
   getToday(): string {
     const today = new Date();

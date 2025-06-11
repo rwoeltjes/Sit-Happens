@@ -4,6 +4,8 @@ export interface Building {
   id: string;
   name: string;
   rooms: Room[];
+  address?: string; // Optional address property
+  imageUrl?: string; // Optional image URL property
 }
 
 export interface Room {
